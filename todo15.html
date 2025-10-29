@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>To-Do List Chronométrée Avancée</title>
+  <style>
+    :root {
+      --bg-color: linear-gradient(135deg, #e0f7fa, #e8f5e9);
+      --text-color: #222;
+      --card-bg: #fff;
+      --accent: #43a047;
+      --shadow: rgba(0,0,0,0.1);
+    }
+
+    body.dark {
+      --bg-color: linear-gradient(135deg, #121212, #1e1e1e);
+      --text-color: #e0e0e0;
+      --card-bg: #1c1c1c;
+      --accent: #81c784;
+      --shadow: rgba(0,0,0,0.6);
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+      transition: background 1s ease, color 1s ease;
+    }
+
+    h1 {
+      color: var(--accent);
+      margin-bottom: 10px;
+      text-align: center;
+      transition: color 0.5s ease;
+    }
+
+    #theme-toggle {
+      position: fixed;
+      top: 15px;
+      right: 20px;
+      background: var(--card-bg);
+      color: var(--text-color);
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 20px;
+      cursor: pointer;
+      box-shadow: 0 0 8px var(--shadow);
+      transition: background 0.4s ease, transform 0.2s ease;
+    }
+
+    #theme-toggle:hover { transform: scale(1.1); }
+
+    #current-time {
+      font-size: 1em;
+      margin-bottom: 20px;
+      background: var(--card-bg);
+      padding: 10px 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 8px var(--shadow);
+      transition: all 0.5s ease;
+    }
+
+    #todo-container {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px var(--shadow);
+      width: 100%;
+      max-width: 520px;
+      transition: all 0.5s ease;
+    }
+
+    #controls {
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    #input-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"], input[type="number"] {
+      padding: 8px;
+      border: 1px solid #aaa;
+      border-radius: 6px;
+      background-color: var(--card-bg);
+      color: var(--text-color);
+      transition: background 0.5s ease, color 0.5s ease;
+    }
+
+    input[type="text"] { flex: 1; min-width: 160px; }
+    input[type="number"] { width: 70px; }
+
+    button {
+      padding: 8px 14px;
+      border: none;
+      background-color: var(--accent);
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    button:hover { transform: scale(1.05); }
+
+    .task {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--card-bg);
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 10px;
+      box-shadow: 0 1px 5px var(--shadow);
+      transition: transform 0.2s ease, background 0.2s ease;
+      position: relative;
+    }
+
+    .task.dragging { opacity: 0.6; transform: scale(1.02); }
+    .task label { flex: 1; margin-left: 10px; cursor: pointer; font-weight: 500; }
+    .done label { text-decoration: line-through; color: #999; }
+
+    .task-time, .task-duration {
+      font-size: 0.85em;
+      color: #888;
+      margin-left: 10px;
+      min-width: 90px;
+      text-align: right;
+    }
+
+    .duration-slider { width: 70px; margin-left: 10px; }
+
+    .drag-handle {
+      cursor: grab;
+      margin-right: 8px;
+      font-size: 1.2em;
+      user-select: none;
+      color: #777;
+    }
+
+    .custom-checkbox {
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+      position: relative;
+      cursor: pointer;
+      outline: none;
+      transition: all 0.3s ease;
+      background-color: var(--card-bg);
+    }
+
+    .custom-checkbox:checked {
+      background-color: var(--accent);
+      border-color: var(--accent);
+      transform: scale(1.2);
+    }
+
+    .custom-checkbox:checked::after {
+      content: "✔";
+      position: absolute;
+      color: white;
+      font-size: 14px;
+      font-weight: bold;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -55%);
+    }
+
+    .confetti {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background-color: var(--color);
+      border-radius: 50%;
+      pointer-events: none;
+      animation: fall 1s ease-out forwards;
+      opacity: 0.9;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translate(var(--x), var(--y)) rotate(720deg);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button id="theme-toggle" title="Changer le thème">🌙</button>
+
+  <h1>Ma To-Do List Chronométrée</h1>
+  <div id="current-time"></div>
+
+  <div id="todo-container">
+    <div id="controls">
+      <span>Afficher les tâches terminées :</span>
+      <input type="checkbox" id="toggle-done" checked>
+    </div>
+
+    <div id="input-container">
+      <input type="text" id="task-input" placeholder="Nouvelle tâche...">
+      <input type="number" id="duration-input" min="1" value="5">
+      <button id="add-btn">Ajouter</button>
+    </div>
+
+    <div id="task-list"></div>
+  </div>
+
+  <!-- ✅ Librairie drag & drop compatible tactile -->
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
+  <script>
+    const addBtn = document.getElementById("add-btn");
+    const taskInput = document.getElementById("task-input");
+    const durationInput = document.getElementById("duration-input");
+    const taskList = document.getElementById("task-list");
+    const currentTimeDisplay = document.getElementById("current-time");
+    const toggleDone = document.getElementById("toggle-done");
+    const themeToggle = document.getElementById("theme-toggle");
+
+    let manualTheme = localStorage.getItem("themeMode") || "auto";
+    function applyTheme() {
+      if (manualTheme === "dark") { document.body.classList.add("dark"); themeToggle.textContent = "☀️"; return; }
+      if (manualTheme === "light") { document.body.classList.remove("dark"); themeToggle.textContent = "🌙"; return; }
+      const hour = new Date().getHours();
+      const isDark = hour >= 19 || hour < 7;
+      document.body.classList.toggle("dark", isDark);
+      themeToggle.textContent = isDark ? "☀️" : "🌙";
+    }
+
+    themeToggle.addEventListener("click", () => {
+      if (manualTheme === "auto") manualTheme = document.body.classList.contains("dark") ? "light" : "dark";
+      else if (manualTheme === "dark") manualTheme = "light";
+      else if (manualTheme === "light") manualTheme = "auto";
+      localStorage.setItem("themeMode", manualTheme);
+      applyTheme();
+    });
+    setInterval(() => { if (manualTheme === "auto") applyTheme(); }, 60000);
+    applyTheme();
+
+    function updateCurrentTime() {
+      const now = new Date();
+      currentTimeDisplay.textContent = "Heure actuelle : " + now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    }
+    setInterval(updateCurrentTime, 1000);
+    updateCurrentTime();
+
+    function launchConfetti(x, y) {
+      const colors = ["#81c784", "#ffca28", "#ef5350", "#42a5f5", "#ab47bc"];
+      for (let i = 0; i < 25; i++) {
+        const confetti = document.createElement("div");
+        confetti.classList.add("confetti");
+        confetti.style.setProperty("--color", colors[Math.floor(Math.random() * colors.length)]);
+        confetti.style.setProperty("--x", `${(Math.random() - 0.5) * 200}px`);
+        confetti.style.setProperty("--y", `${150 + Math.random() * 100}px`);
+        confetti.style.left = `${x}px`;
+        confetti.style.top = `${y}px`;
+        document.body.appendChild(confetti);
+        setTimeout(() => confetti.remove(), 1000);
+      }
+    }
+
+    let firstTaskStartTime = null;
+
+    function addTask() {
+      const text = taskInput.value.trim();
+      const duration = parseInt(durationInput.value) || 5;
+      if (!text) return;
+
+      const taskDiv = document.createElement("div");
+      taskDiv.classList.add("task");
+      taskDiv.dataset.duration = duration;
+      taskDiv.dataset.completed = "false";
+
+      const dragHandle = document.createElement("span");
+      dragHandle.classList.add("drag-handle");
+      dragHandle.textContent = "☰";
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.classList.add("custom-checkbox");
+
+      const label = document.createElement("label");
+      label.textContent = text;
+
+      const slider = document.createElement("input");
+      slider.type = "range";
+      slider.min = "1";
+      slider.max = "30";
+      slider.value = duration;
+      slider.classList.add("duration-slider");
+
+      const durationSpan = document.createElement("span");
+      durationSpan.classList.add("task-duration");
+      durationSpan.textContent = `${duration} min`;
+
+      const timeSpan = document.createElement("span");
+      timeSpan.classList.add("task-time");
+      timeSpan.innerHTML = "--:--";
+
+      slider.addEventListener("input", () => {
+        taskDiv.dataset.duration = slider.value;
+        durationSpan.textContent = `${slider.value} min`;
+        updateTaskTimes();
+      });
+
+      checkbox.addEventListener("change", (e) => {
+        if (checkbox.checked) {
+          taskDiv.classList.add("done");
+          taskDiv.dataset.completed = "true";
+          taskDiv.dataset.realEnd = new Date().toISOString();
+          const rect = e.target.getBoundingClientRect();
+          launchConfetti(rect.left + rect.width/2, rect.top + rect.height/2);
+        } else {
+          taskDiv.classList.remove("done");
+          taskDiv.dataset.completed = "false";
+          delete taskDiv.dataset.realEnd;
+        }
+        updateTaskTimes();
+      });
+
+      label.addEventListener("dblclick", () => { taskDiv.remove(); updateTaskTimes(); });
+
+      taskDiv.append(dragHandle, checkbox, label, slider, durationSpan, timeSpan);
+      taskList.appendChild(taskDiv);
+
+      taskInput.value = "";
+      durationInput.value = 5;
+      if (!firstTaskStartTime) firstTaskStartTime = new Date();
+      updateTaskTimes();
+    }
+
+    addBtn.addEventListener("click", addTask);
+    taskInput.addEventListener("keypress", e => { if (e.key === "Enter") addTask(); });
+    durationInput.addEventListener("keypress", e => { if (e.key === "Enter") addTask(); });
+    toggleDone.addEventListener("change", updateTaskTimes);
+
+    // ✅ Nouveau drag & drop mobile-friendly
+    new Sortable(taskList, {
+      handle: '.drag-handle',
+      animation: 150,
+      onEnd: () => updateTaskTimes()
+    });
+
+    function updateTaskTimes() {
+      const tasks = [...taskList.children];
+      if (tasks.length === 0) { firstTaskStartTime = null; return; }
+      if (!firstTaskStartTime) firstTaskStartTime = new Date();
+
+      let currentEnd = new Date(firstTaskStartTime);
+      tasks.forEach(task => {
+        const isDone = task.dataset.completed === "true";
+        const duration = parseInt(task.dataset.duration);
+        const timeSpan = task.querySelector(".task-time");
+        const now = new Date();
+
+        currentEnd = new Date(currentEnd.getTime() + duration * 60000);
+
+        if (isDone && task.dataset.realEnd) {
+          const realEnd = new Date(task.dataset.realEnd);
+          const realStr = realEnd.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+          const estStr = currentEnd.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+          const delta = Math.round((realEnd - currentEnd) / 60000);
+          const deltaStr = delta >= 0 ? `+${delta} min` : `${delta} min`;
+          timeSpan.innerHTML = `Est: ${estStr}, Réel: ${realStr} (<span class="${delta<0?'advance':'overdue'}">${deltaStr}</span>)`;
+        } else {
+          const estStr = currentEnd.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+          const diffMin = Math.round((currentEnd - now) / 60000);
+          const diffText = diffMin >= 0 ? `(dans ${diffMin} min)` : `(en retard de ${Math.abs(diffMin)} min)`;
+          timeSpan.innerHTML = `${estStr} <span class="${diffMin >= 0 ? '' : 'overdue'}">${diffText}</span>`;
+        }
+
+        task.style.display = (isDone && !toggleDone.checked) ? "none" : "flex";
+      });
+    }
+
+    setInterval(updateTaskTimes, 1000);
+  </script>
+</body>
+</html>
