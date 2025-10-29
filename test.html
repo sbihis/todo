@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Test Drag & Drop iPhone</title>
+<style>
+  body { font-family: sans-serif; background:#f0f0f0; padding:20px; }
+  .task { display:flex; align-items:center; gap:10px; background:white; padding:10px; margin-bottom:8px; border-radius:8px; cursor:grab; }
+  .drag-handle { cursor:grab; color:#999; }
+  .dragging { opacity:0.6; transform:scale(1.03); }
+</style>
+</head>
+<body>
+  <h2>Test Drag & Drop iPhone</h2>
+  <div id="task-list">
+    <div class="task"><span class="drag-handle">☰</span> Tâche A</div>
+    <div class="task"><span class="drag-handle">☰</span> Tâche B</div>
+    <div class="task"><span class="drag-handle">☰</span> Tâche C</div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  <script>
+    new Sortable(document.getElementById('task-list'), {
+      handle: '.drag-handle',
+      animation: 150,
+      ghostClass: 'dragging'
+    });
+  </script>
+</body>
+</html>
