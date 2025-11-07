@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>To-Do List Chronométrée Avancée</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<!-- Déplacement des boutons en haut, dans la section #controls -->
+<div id="controls">
+  <!-- Contrôle du thème -->
+  <button id="theme-toggle" title="Changer le thème">🌙</button>
+
+  <!-- Boutons Importer/Exporter -->
+  <div id="export-import" style="display: flex; gap: 10px;">
+    <button id="export-btn" title="Exporter JSON" style="font-size: 14px;">💾</button>
+    <button id="import-btn" title="Importer JSON" style="font-size: 14px;">📂</button>
+	<input type="file" id="file-input" accept=".json">
+  </div>
+  <!-- Affichage du toggle des tâches terminées -->
+  <span>Afficher les tâches terminées :</span>
+  <input type="checkbox" id="toggle-done" checked>
+  <button id="clean-btn">🧹 Nettoyer</button>
+</div>
+
+  <h1>Ma To-Do List Chronométrée</h1>
+  <div id="current-time"></div>
+  <div id="todo-container">
+    <div id="input-container">
+      <input type="text" id="task-input" placeholder="Nouvelle tâche...">
+      <input type="number" id="duration-input" min="1" placeholder="5" value="">
+      <button id="add-btn">Ajouter</button>
+    </div>
+    <div id="task-list"></div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  <script src="theme.js"></script>
+  <script src="tasks.js"></script>
+  <script src="confetti.js"></script>
+  <script src="saveLoad.js"></script>
+  <script src="timer.js"></script>
+  <script src="app.js"></script>
+  
+</body>
+</html>
