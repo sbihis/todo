@@ -1,0 +1,327 @@
+:root {
+  --bg-color: linear-gradient(135deg, #e0f7fa, #e8f5e9);
+  --text-color: #222;
+  --card-bg: #fff;
+  --accent: #43a047;
+  --shadow: rgba(0,0,0,0.1);
+}
+
+body.dark {
+  --bg-color: linear-gradient(135deg, #121212, #1e1e1e);
+  --text-color: #e0e0e0;
+  --card-bg: #1c1c1c;
+  --accent: #81c784;
+  --shadow: rgba(0,0,0,0.6);
+}
+
+/* Structure de base */
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: var(--bg-color);
+  color: var(--text-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+  padding: 16px;
+  min-height: 100vh;
+  transition: background 1s ease, color 1s ease;
+  box-sizing: border-box;
+}
+
+/* Titre principal */
+h1 {
+  color: var(--accent);
+  margin: 60px 0 10px;
+  text-align: center;
+  font-size: 1.8em;
+}
+
+/* === Barre de contrôle (haut de page) === */
+#controls {
+  position: fixed;
+  top: 10px;
+  left: 0;
+  width: 100%;
+  padding: 6px 14px;
+  background: var(--card-bg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  box-shadow: 0 2px 8px var(--shadow);
+  z-index: 100;
+}
+
+#theme-toggle {
+  background: var(--card-bg);
+  color: var(--text-color);
+  border: none;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  font-size: 18px;
+  cursor: pointer;
+  box-shadow: 0 0 6px var(--shadow);
+  transition: transform 0.2s ease;
+}
+
+#theme-toggle:hover {
+  transform: scale(1.1);
+}
+
+/* Boutons Importer/Exporter */
+#export-import {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+#export-btn,
+#import-btn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: var(--text-color);
+  cursor: pointer;
+  padding: 5px 6px;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+#export-btn:hover,
+#import-btn:hover {
+  color: var(--accent);
+  transform: scale(1.05);
+}
+
+#file-input {
+  display: none;
+}
+
+/* Conteneur principal */
+#todo-container {
+  background: var(--card-bg);
+  padding: 18px;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px var(--shadow);
+  width: 100%;
+  max-width: 400px;
+  margin-top: 10px;
+}
+
+/* Heure actuelle */
+#current-time {
+  font-size: 1em;
+  margin-bottom: 20px;
+  background: var(--card-bg);
+  padding: 8px 16px;
+  border-radius: 8px;
+  box-shadow: 0 0 6px var(--shadow);
+  text-align: center;
+}
+
+/* Champ d’ajout */
+#input-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+input[type="text"], input[type="number"] {
+  padding: 10px;
+  border: 1px solid #aaa;
+  border-radius: 6px;
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  transition: background 0.5s ease, color 0.5s ease;
+  font-size: 1em;
+}
+
+input[type="text"] {
+  flex: 1;
+  min-width: 160px;
+}
+
+input[type="number"] {
+  width: 80px;
+}
+
+button {
+  padding: 10px 14px;
+  border: none;
+  background-color: var(--accent);
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+  font-size: 1em;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+/* === Tâches === */
+.task {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  background: var(--card-bg);
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 5px var(--shadow);
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  gap: 6px;
+}
+
+.task label {
+  flex: 1 1 100%;
+  font-weight: 500;
+  word-break: break-word;
+  margin-left: 6px;
+}
+
+.task-main-content,
+.task-duration-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.task .task-time,
+.task .task-duration,
+.task .delete-btn,
+.task .duration-slider {
+  flex: 0 0 auto;
+}
+
+.task-time {
+  font-size: 0.85em;
+  color: #888;
+  margin-top: 8px;
+}
+
+.duration-slider {
+  width: 100%;
+  max-width: 150px;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 18px;
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.delete-btn:hover {
+  color: #ef5350;
+  transform: scale(1.2);
+}
+
+.drag-handle {
+  font-size: 1.2em;
+  margin-right: 8px;
+  cursor: grab;
+  color: #777;
+}
+
+.custom-checkbox {
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  position: relative;
+  cursor: pointer;
+  background-color: var(--card-bg);
+  transition: all 0.3s ease;
+}
+
+.custom-checkbox:checked {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  transform: scale(1.2);
+}
+
+.custom-checkbox:checked::after {
+  content: "✔";
+  position: absolute;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -55%);
+}
+
+.done label {
+  text-decoration: line-through;
+  color: #999;
+}
+
+/* === Sous-tâche === */
+.subtask-input-container {
+  width: 100%;
+  margin-top: 10px;
+  display: none;
+  padding: 10px;
+  background-color: #f0f0f0;
+  border-radius: 6px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.subtask-input-container input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.subtask-input-container button {
+  width: 100%;
+  padding: 8px;
+  border: none;
+  background-color: #4caf50;
+  color: white;
+  border-radius: 6px;
+}
+
+/* === Responsive iPhone 12 Pro Max (≈ 390 px de large) === */
+@media screen and (max-width: 430px) {
+  #controls {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 8px 12px;
+    gap: 6px;
+  }
+
+  #todo-container {
+    padding: 14px;
+    max-width: 100%;
+  }
+
+  button, input {
+    font-size: 0.95em;
+  }
+
+  .task {
+    padding: 8px;
+  }
+
+  .duration-slider {
+    max-width: 120px;
+  }
+
+  h1 {
+    font-size: 1.5em;
+  }
+}
