@@ -1,0 +1,335 @@
+:root {
+  --bg-color: linear-gradient(135deg, #e0f7fa, #e8f5e9);
+  --text-color: #222;
+  --card-bg: #fff;
+  --accent: #43a047;
+  --shadow: rgba(0,0,0,0.1);
+}
+body.dark {
+  --bg-color: linear-gradient(135deg, #121212, #1e1e1e);
+  --text-color: #e0e0e0;
+  --card-bg: #1c1c1c;
+  --accent: #81c784;
+  --shadow: rgba(0,0,0,0.6);
+}
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: var(--bg-color);
+  color: var(--text-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+  padding: 20px;
+  min-height: 100vh;
+  transition: background 1s ease, color 1s ease;
+}
+h1 {
+  color: var(--accent);
+  margin-bottom: 10px;
+  text-align: center;
+  transition: color 0.5s ease;
+}
+#theme-toggle {
+  position: fixed;
+  top: 15px;
+  right: 20px;
+  background: var(--card-bg);
+  color: var(--text-color);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 0 8px var(--shadow);
+  transition: background 0.4s ease, transform 0.2s ease;
+}
+#theme-toggle:hover {
+  transform: scale(1.1);
+}
+
+    #todo-container { background: var(--card-bg); padding: 20px; border-radius: 12px; box-shadow: 0 2px 12px var(--shadow); width: 100%; transition: all 0.5s ease; }
+    #input-container { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+    input[type="text"], input[type="number"] { padding: 8px; border: 1px solid #aaa; border-radius: 6px; background-color: var(--card-bg); color: var(--text-color); transition: background 0.5s ease, color 0.5s ease; }
+    input[type="text"] { flex: 1; min-width: 160px; }
+    input[type="number"] { width: 70px; }
+    button { padding: 8px 12px; border: none; background-color: var(--accent); color: white; border-radius: 6px; cursor: pointer; transition: transform 0.2s ease, background 0.2s ease; }
+    button:hover { transform: scale(1.05); }
+    .task.dragging { opacity: 0.6; transform: scale(1.02); }
+    .done label { text-decoration: line-through; color: #999; }
+    .custom-checkbox { appearance: none; width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--accent); position: relative; cursor: pointer; outline: none; transition: all 0.3s ease; background-color: var(--card-bg); }
+    .custom-checkbox:checked { background-color: var(--accent); border-color: var(--accent); transform: scale(1.2); }
+    .custom-checkbox:checked::after { content: "✔"; position: absolute; color: white; font-size: 14px; font-weight: bold; top: 50%; left: 50%; transform: translate(-50%, -55%); }
+    .confetti { position: absolute; width: 8px; height: 8px; background-color: var(--color); border-radius: 50%; pointer-events: none; animation: fall 1s ease-out forwards; opacity: 0.9; }
+    @keyframes fall { to { transform: translate(var(--x), var(--y)) rotate(720deg); opacity: 0; } }
+    #file-input { display: none; }
+
+
+
+/* Conteneur des boutons Importer / Exporter */
+#export-import {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Boutons Importer et Exporter plus discrets */
+#export-btn,
+#import-btn {
+  background: none;
+  border: none;
+  font-size: 18px; /* Taille plus petite */
+  color: var(--text-color);
+  cursor: pointer;
+  padding: 5px 10px;
+  transition: transform 0.2s ease, color 0.3s ease;
+}
+
+#export-btn:hover,
+#import-btn:hover {
+  color: var(--accent); /* Accentuer la couleur au survol */
+  transform: scale(1.05);
+}
+
+/* Optionnel : les boutons peuvent être alignés plus discrètement */
+#controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+/* La tâche va se diviser sur plusieurs lignes */
+.task {
+  display: flex;
+  flex-wrap: wrap; /* Permet de passer à la ligne suivante */
+  align-items: center;
+  justify-content: space-between;
+  background: var(--card-bg);
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 5px var(--shadow);
+  position: relative;
+  word-wrap: break-word; /* Permet de couper le texte long */
+  word-break: break-word;
+  width: 100%; /* Se redimensionne pour utiliser toute la largeur disponible */
+  box-sizing: border-box;
+}
+
+.task.selected {
+      background-color: #007BFF;
+      border-color: #004A99;
+      color: white;
+    }
+
+/* Le label de la tâche qui contient le texte s'étendra pour occuper tout l'espace disponible */
+.task label {
+  flex: 1 1 100%; /* Occupe toute la largeur disponible sur la ligne */
+  margin-left: 10px;
+  font-weight: 500;
+  word-wrap: break-word; /* Assure que le texte s'affiche sur plusieurs lignes si nécessaire */
+}
+
+.task-main-content, .task-duration-content {
+  width: 100%;  /* Assure que chaque div prend 100% de la largeur de la div parent */
+  display: flex;
+  justify-content: space-between; /* Distribue l'espace entre les éléments internes */
+  align-items: center; /* Aligne les éléments au centre verticalement (si nécessaire) */
+}
+
+/* La case à cocher, le slider de durée, le bouton de suppression et le temps restent sur la même ligne */
+.task .task-time,
+.task .task-duration,
+.task .delete-btn,
+.task .duration-slider {
+  flex: 0 0 auto; /* Empêche ces éléments de s'étendre */
+  margin-top: 8px;
+}
+
+/* Les éléments qui étaient sur une seule ligne sont maintenant regroupés en colonnes */
+.task-time {
+  margin-top: 10px;
+  font-size: 0.85em;
+  color: #888;
+}
+
+.fixed {
+  background-color: #f0f0f0;
+  color: #888;
+}
+
+/* Le bouton de suppression reste petit et discret, placé à droite */
+.delete-btn {
+  margin-left: 8px;
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 18px;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.delete-btn:hover {
+  color: #ef5350;
+  transform: scale(1.2);
+}
+
+/* Ajuster la largeur des contrôles pour ne pas les rendre trop grands */
+.duration-slider {
+  width: 80px;
+  margin-top: 8px;
+}
+
+.drag-handle {
+  font-size: 1.2em;
+  margin-right: 8px;
+  cursor: grab;
+  color: #777;
+}
+
+.subtask-input-container {
+  margin-top: 10px;
+  display: none;
+  padding: 10px;
+  background-color: #f0f0f0;
+  border-radius: 6px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.subtask-input-container input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.subtask-input-container button {
+  padding: 8px 12px;
+  border: none;
+  background-color: #4caf50;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.subtask-input-container button:hover {
+  transform: scale(1.05);
+}
+
+.addAfter-btn {
+  margin-top: 10px;
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.addBefore-btn {
+  margin-top: 10px;
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+
+/* Style de la pop-up */
+  #shortcutPopup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border: 2px solid #333;
+    padding: 20px;
+    width: 300px;
+    display: none;
+    box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    z-index: 9999;
+  }
+
+  #shortcutPopup h2 {
+    margin-top: 0;
+  }
+
+  /* Fond semi-transparent */
+  #popupOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: none;
+    z-index: 9998;
+  }
+
+
+
+/*
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background: #f4f4f4;
+  }
+
+  .container {
+    max-width: 400px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  }
+
+  label {
+    font-weight: bold;
+    display: block;
+    margin-top: 10px;
+  }
+
+  input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+
+  button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 15px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  button:hover {
+    background: #45a049;
+  }
+
+
+
+  #task-list {
+    margin-top: 20px;
+  }
+
+  .task {
+    background: #fff7d1;
+    border-left: 4px solid #f0c200;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 4px;
+  }
