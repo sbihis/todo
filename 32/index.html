@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>To-Do List Chronométrée Avancée</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="todo-container">
+    <div id="input-container">
+      <input type="text" id="task-input" placeholder="Nouvelle tâche...">
+      <!--input type="number" id="duration-input" min="1" placeholder="5" value="">
+      <button id="add-btn">Ajouter</button-->
+    </div>
+    <div id="task-list"></div>
+  </div>
+  
+  <div id="controls">
+  <!-- Contrôle du thème -->
+  <button id="theme-toggle" title="Changer le thème">🌙</button>
+
+  <!-- Boutons Importer/Exporter -->
+  <div id="export-import" style="display: flex; gap: 10px;">
+    <button id="export-btn" title="Exporter JSON" style="font-size: 14px;">💾</button>
+    <button id="import-btn" title="Importer JSON" style="font-size: 14px;">📂</button>
+	<input type="file" id="file-input" accept=".json">
+  </div>
+  <!-- Affichage du toggle des tâches terminées -->
+  <span>view all</span>
+  <input type="checkbox" id="toggle-done" checked>
+  <button id="clean-btn" style="font-size: 14px;">🧹</button>
+  <button id="deleteAll-btn" style="font-size: 14px;">🧨</button>
+  
+  <div id="popupOverlay"></div>
+	<div id="shortcutPopup">
+	  <h2>Raccourcis clavier</h2>
+	  <ul>
+		<li><b>?</b> : Afficher l'aide</li>
+		<li><b>fleche</b> : Se déplacer dans les tâches</li>
+		<li><b>Shift + fleche</b> : ajouter tache avant / après</li>
+		<li><b>N</b> : Créer tache</li>
+		<li><b>Esc</b> : de-selectionner la tache</li>
+		<li><b>Backspace</b> : supprimer la tache</li>
+		<li><b>Espace</b> : compléter tache</li>
+		<li><b>Esc</b> : Fermer la fenêtre</li>
+		
+		<!-- Ajoute d’autres raccourcis ici -->
+	  </ul>
+	</div>
+</div>
+
+<div class="container">
+  <h2>Ajouter tâche fixe</h2>
+
+  <label for="task-name">Nom de la tâche :</label>
+  <input type="text" id="task-name" placeholder="Ex : Réunion, Étude...">
+
+  <label for="task-start">Heure de début :</label>
+  <input type="time" id="task-start">
+
+  <label for="task-duration">Durée (minutes) :</label>
+  <input type="number" id="task-duration" min="1" placeholder="Ex : 30" value="5">
+
+  <button onclick="addFixedTask()">Add</button>
+
+  <div id="task-list"></div>
+</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  <script src="theme.js"></script>
+  <script src="tasks.js"></script>
+  <script src="fixedTasks.js"></script>
+  <script src="confetti.js"></script>
+  <script src="saveLoad.js"></script>
+  <script src="timer.js"></script>
+  <script src="app.js"></script
+    
+
+  
+</body>
+</html>
