@@ -68,12 +68,12 @@
  <h1>Diagramme Mermaid</h1>
 
   <pre class="mermaid">
-	flowchart LR
-	  A[Start] --> B{Choix}
-	  B -->|Oui| C[Action 1]
-	  B -->|Non| D[Action 2]
-	  C --> E[Fin]
-	  D --> E[Fin]
+	gantt
+	    dateFormat HH:mm
+	    axisFormat %H:%M
+	    Initial milestone : milestone, m1, 17:49, 2m
+	    Task A : 10m
+	    Task B : 5m
   </pre>
 
   <script type="module">
@@ -96,6 +96,7 @@
   <script src="confetti.js"></script>
   <script src="saveLoad.js"></script>
   <script src="timer.js"></script>
+  <script src="gantt.js"></script>
   <script src="app.js"></script
     
 
