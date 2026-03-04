@@ -1,4 +1,4 @@
-const gantt = document.getElementsById("gantt");
+const gantt = document.getElementById("gantt");
 gantt.innerText = gantt.innerText + `
 teote :10m
 fsdf : 22m 
