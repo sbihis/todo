@@ -1,4 +1,4 @@
-const diagramCode = document.getElementByClassName("mermaid");
+const diagramCode = document.getElementsByClassName("mermaid");
 diagramCode.innerText = diagramCode.innerText + `
 teote :10m
 fsdf : 22m 
